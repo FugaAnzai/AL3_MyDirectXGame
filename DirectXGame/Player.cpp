@@ -15,6 +15,34 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 void Player::Update() { 
 
+	Move();
+	Rotate();
+	Attack();
+
+	if (bullet_) {
+		bullet_->Update();
+	}
+
+	//デバッグ用座標表示
+	ImGui::Begin("Player");
+	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
+	ImGui::InputFloat3("translation", inputTranslation);
+	ImGui::End();
+
+	//行列の更新
+	worldTransform_.UpdateMatrix();
+}
+
+void Player::Draw(const ViewProjection& viewProjection) {
+
+	if (bullet_) {
+		bullet_->Draw(viewProjection);
+	}
+	model_->Draw(worldTransform_, viewProjection,textureHandle_);
+
+}
+
+void Player::Move() {
 	Vector3 move = Vector3(0, 0, 0);
 
 	const float kPlayerSpeed = 0.2f;
@@ -39,22 +67,35 @@ void Player::Update() {
 
 	worldTransform_.translation_ += move;
 
-	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -kMoveLimitX, kMoveLimitX);
-	worldTransform_.translation_.y = std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
-
-
-	ImGui::Begin("Player");
-	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
-	ImGui::InputFloat3("translation", inputTranslation);
-	ImGui::End();
-
-	worldTransform_.matWorld_ = Matrix4x4::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
-	worldTransform_.TransferMatrix();
+	worldTransform_.translation_.x =
+	    std::clamp(worldTransform_.translation_.x, -kMoveLimitX, kMoveLimitX);
+	worldTransform_.translation_.y =
+	    std::clamp(worldTransform_.translation_.y, -kMoveLimitY, kMoveLimitY);
 }
 
-void Player::Draw(const ViewProjection& viewProjection) {
+void Player::Rotate() {
 
-	model_->Draw(worldTransform_, viewProjection,textureHandle_);
+	const float kRotateSpeed = 0.02f;
+
+	if (input_->GetInstance()->PushKey(DIK_A)) {
+		worldTransform_.rotation_.y -= kRotateSpeed; 
+	}
+
+	if (input_->GetInstance()->PushKey(DIK_D)) {
+		worldTransform_.rotation_.y += kRotateSpeed;
+	}
 
 }
+
+void Player::Attack() {
+
+	if (input_->GetInstance()->TriggerKey(DIK_SPACE)) {
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		//弾を登録
+		bullet_ = newBullet;
+	}
+
+}
+
