@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Vector3.h"
 #include "PlayerBullet.h"
+#include <list>
 
 class Player {
 public:
@@ -46,6 +47,7 @@ private:
 	//入力
 	Input* input_ = nullptr;
 	//弾
+	std::list<PlayerBullet*> bullets_;
 	PlayerBullet* bullet_ = nullptr;
 };
 
