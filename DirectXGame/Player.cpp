@@ -2,6 +2,10 @@
 #include "cassert"
 #include "ImGuiManager.h"
 
+Player::~Player() { 
+	delete bullet_; 
+}
+
 void Player::Initialize(Model* model, uint32_t textureHandle) { 
 	assert(model);
 
@@ -90,6 +94,12 @@ void Player::Rotate() {
 void Player::Attack() {
 
 	if (input_->GetInstance()->TriggerKey(DIK_SPACE)) {
+
+		if (bullet_) {
+			delete bullet_;
+			bullet_ = nullptr;
+		}
+
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, worldTransform_.translation_);
 
