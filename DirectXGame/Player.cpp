@@ -3,7 +3,11 @@
 #include "ImGuiManager.h"
 
 Player::~Player() { 
-	delete bullet_; 
+
+	for (PlayerBullet* bullet : bullets_) {
+		delete bullet;
+	}
+
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle) { 
@@ -23,8 +27,8 @@ void Player::Update() {
 	Rotate();
 	Attack();
 
-	if (bullet_) {
-		bullet_->Update();
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();		
 	}
 
 	//デバッグ用座標表示
@@ -39,9 +43,10 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& viewProjection) {
 
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
+
 	model_->Draw(worldTransform_, viewProjection,textureHandle_);
 
 }
@@ -95,16 +100,11 @@ void Player::Attack() {
 
 	if (input_->GetInstance()->TriggerKey(DIK_SPACE)) {
 
-		if (bullet_) {
-			delete bullet_;
-			bullet_ = nullptr;
-		}
-
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, worldTransform_.translation_);
 
 		//弾を登録
-		bullet_ = newBullet;
+		bullets_.push_back(newBullet);
 	}
 
 }
