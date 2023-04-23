@@ -31,6 +31,14 @@ void Player::Update() {
 		bullet->Update();		
 	}
 
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->GetIsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	//デバッグ用座標表示
 	ImGui::Begin("Player");
 	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
@@ -58,6 +66,7 @@ void Player::Move() {
 	const float kMoveLimitX = 32;
 	const float kMoveLimitY = 18;
 
+	//入力方向に移動
 	if (input_->GetInstance()->PushKey(DIK_LEFT)) {
 		move.x -= kPlayerSpeed;
 	}
@@ -74,8 +83,10 @@ void Player::Move() {
 		move.y -= kPlayerSpeed;
 	}
 
+	//移動量加算
 	worldTransform_.translation_ += move;
 
+	//画面外押し出し
 	worldTransform_.translation_.x =
 	    std::clamp(worldTransform_.translation_.x, -kMoveLimitX, kMoveLimitX);
 	worldTransform_.translation_.y =
@@ -86,6 +97,7 @@ void Player::Rotate() {
 
 	const float kRotateSpeed = 0.02f;
 
+	//旋回処理
 	if (input_->GetInstance()->PushKey(DIK_A)) {
 		worldTransform_.rotation_.y -= kRotateSpeed; 
 	}
@@ -100,8 +112,14 @@ void Player::Attack() {
 
 	if (input_->GetInstance()->TriggerKey(DIK_SPACE)) {
 
+		//弾の速度
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+		velocity = Vector3::TransformNormal(velocity, worldTransform_.matWorld_);
+
+		//弾の生成
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_);
+		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
 
 		//弾を登録
 		bullets_.push_back(newBullet);
