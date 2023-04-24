@@ -8,28 +8,28 @@ Enemy::~Enemy() { delete state_; }
 
 void Enemy::Initialize(Model* model) { 
 
-	//‰ŠúˆÊ’u
+	//åˆæœŸä½ç½®
 	const Vector3 initPosition = Vector3(0, 5, 100);
 
-	//ƒ‚ƒfƒ‹‚ª‚È‚¯‚ê‚Î’†Ž~
+	//ãƒ¢ãƒ‡ãƒ«ãŒãªã‘ã‚Œã°ä¸­æ­¢
 	assert(model);
-	//ƒ‚ƒfƒ‹‘ã“ü
+	//ãƒ¢ãƒ‡ãƒ«ä»£å…¥
 	model_ = model;
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
-	//‰ŠúˆÊ’u‚Ì‘ã“ü
+	//åˆæœŸä½ç½®ã®ä»£å…¥
 	worldTransform_.translation_ = initPosition;
-	//ƒeƒNƒXƒ`ƒƒƒ[ƒh
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ­ãƒ¼ãƒ‰
 	textureHandle_ = TextureManager::Load("eyes.jpg");
-	//state‚Ì‰Šú’l‚ðnew
+	//stateã®åˆæœŸå€¤ã‚’new
 	state_ = new EnemyStateApproach();
-	//EnemyState‚ÉEnemy‚Ìƒ|ƒCƒ“ƒ^‚ð“n‚·
+	//EnemyStateã«Enemyã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ¸¡ã™
 	state_->SetEnemy(this);
 }
 
 void Enemy::Update() {
 
-	//ó‘Ô‘JˆÚ
+	//çŠ¶æ…‹é·ç§»
 	state_->Update();
 
 	ImGui::Begin("Enemy");
