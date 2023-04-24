@@ -8,28 +8,28 @@ Enemy::~Enemy() { delete state_; }
 
 void Enemy::Initialize(Model* model) { 
 
+	//初期位置
 	const Vector3 initPosition = Vector3(0, 5, 100);
 
+	//モデルがなければ中止
 	assert(model);
+	//モデル代入
 	model_ = model;
+	//ワールド変換データの初期化
 	worldTransform_.Initialize();
+	//初期位置の代入
 	worldTransform_.translation_ = initPosition;
+	//テクスチャロード
 	textureHandle_ = TextureManager::Load("eyes.jpg");
+	//stateの初期値をnew
 	state_ = new EnemyStateApproach();
+	//EnemyStateにEnemyのポインタを渡す
 	state_->SetEnemy(this);
 }
 
 void Enemy::Update() {
 
-	/* switch (phase_) {
-	case Enemy::Phase::Approach:
-		Approach();
-		break;
-	case Enemy::Phase::Leave:
-		Leave();
-		break;
-	}*/
-
+	//状態遷移
 	state_->Update();
 
 	ImGui::Begin("Enemy");
