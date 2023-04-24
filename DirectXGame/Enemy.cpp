@@ -17,7 +17,14 @@ void Enemy::Initialize(Model* model) {
 
 void Enemy::Update() {
 
-	Move();
+	switch (phase_) {
+	case Enemy::Phase::Approach:
+		Approach();
+		break;
+	case Enemy::Phase::Leave:
+		Leave();
+		break;
+	}
 
 	ImGui::Begin("Enemy");
 	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
@@ -32,10 +39,22 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }
 
-void Enemy::Move() {
+void Enemy::Approach() {
 
-	const float kMoveSpeed = -0.2f;
+	const float kApproachSpeed = -0.2f;
 
-	worldTransform_.translation_ += Vector3(0, 0, kMoveSpeed);
+	worldTransform_.translation_ += Vector3(0, 0, kApproachSpeed);
+
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+
+}
+
+void Enemy::Leave() {
+
+	const float kLeaveSpeed = -0.2f;
+
+	worldTransform_.translation_ += Vector3(kLeaveSpeed, 0, kLeaveSpeed);
 
 }
