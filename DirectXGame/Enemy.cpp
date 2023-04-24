@@ -4,6 +4,8 @@
 #include "ImGuiManager.h"
 #include "Vector3.h"
 
+Enemy::~Enemy() { delete state_; }
+
 void Enemy::Initialize(Model* model) { 
 
 	const Vector3 initPosition = Vector3(0, 5, 100);
@@ -13,18 +15,22 @@ void Enemy::Initialize(Model* model) {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = initPosition;
 	textureHandle_ = TextureManager::Load("eyes.jpg");
+	state_ = new EnemyStateApproach();
+	state_->SetEnemy(this);
 }
 
 void Enemy::Update() {
 
-	switch (phase_) {
+	/* switch (phase_) {
 	case Enemy::Phase::Approach:
 		Approach();
 		break;
 	case Enemy::Phase::Leave:
 		Leave();
 		break;
-	}
+	}*/
+
+	state_->Update();
 
 	ImGui::Begin("Enemy");
 	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
@@ -39,22 +45,12 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }
 
-void Enemy::Approach() {
+void Enemy::Move(const Vector3& move) { worldTransform_.translation_ += move; }
 
-	const float kApproachSpeed = -0.2f;
-
-	worldTransform_.translation_ += Vector3(0, 0, kApproachSpeed);
-
-	if (worldTransform_.translation_.z < 0.0f) {
-		phase_ = Phase::Leave;
-	}
-
-}
-
-void Enemy::Leave() {
-
-	const float kLeaveSpeed = -0.2f;
-
-	worldTransform_.translation_ += Vector3(kLeaveSpeed, 0, kLeaveSpeed);
+void Enemy::ChangeState(BaseEnemyState* newState) 
+{ 
+	delete state_;
+	state_ = newState;
+	state_->SetEnemy(this);
 
 }
