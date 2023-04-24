@@ -1,4 +1,5 @@
 #pragma once
+#include "Enemy.h"
 
 #include "Audio.h"
 #include "DirectXCommon.h"
@@ -52,6 +53,7 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCameraActive = false;
+	Enemy* enemy_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

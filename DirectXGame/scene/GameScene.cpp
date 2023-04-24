@@ -11,6 +11,7 @@ GameScene::~GameScene() {
 	delete model_;
 	delete player_;
 	delete debugCamera_;
+	delete enemy_;
 
 }
 
@@ -27,12 +28,15 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	player_ = new Player();
 	player_->Initialize(model_,texureHandle_);
+	enemy_ = new Enemy();
+	enemy_->Initialize(model_);
+
 }
 
 void GameScene::Update() {
 	
 	#ifdef _DEBUG
-	
+	//デバッグ時にのみデバッグカメラ切り替え
 	if (input_->GetInstance()->TriggerKey(DIK_C)) {
 		isDebugCameraActive = !isDebugCameraActive;
 	}
@@ -40,6 +44,10 @@ void GameScene::Update() {
 #endif
 
 	player_->Update();
+
+	if (enemy_ != nullptr) {
+		enemy_->Update();
+	}
 
 	if (isDebugCameraActive) {
 		debugCamera_->Update();
@@ -79,6 +87,10 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw(debugCamera_->GetViewProjection());
+
+	if (enemy_ != nullptr) {
+		enemy_->Draw(debugCamera_->GetViewProjection());
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
