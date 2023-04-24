@@ -26,5 +26,7 @@ private:
 	uint32_t textureHandle_;
 	//状態遷移
 	Phase phase_ = Phase::Approach;
+	//メンバ関数ポインタ
+	static void (Enemy::*phaseTable[])();
 
 };
