@@ -5,10 +5,6 @@
 
 Player::~Player() { 
 
-	for (PlayerBullet* bullet : bullets_) {
-		delete bullet;
-	}
-
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle) { 
@@ -28,13 +24,12 @@ void Player::Update() {
 	Rotate();
 	Attack();
 
-	for (PlayerBullet* bullet : bullets_) {
+	for (auto &bullet : bullets_) {
 		bullet->Update();		
 	}
 
-	bullets_.remove_if([](PlayerBullet* bullet) {
+	bullets_.remove_if([](auto &bullet) {
 		if (bullet->GetIsDead()) {
-			delete bullet;
 			return true;
 		}
 		return false;
@@ -52,7 +47,7 @@ void Player::Update() {
 
 void Player::Draw(const ViewProjection& viewProjection) {
 
-	for (PlayerBullet* bullet : bullets_) {
+	for (auto &bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
 
@@ -119,11 +114,11 @@ void Player::Attack() {
 		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
 		//弾の生成
-		PlayerBullet* newBullet = new PlayerBullet();
+		std::unique_ptr<PlayerBullet> newBullet(new PlayerBullet());
 		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
 
 		//弾を登録
-		bullets_.push_back(newBullet);
+		bullets_.push_back(std::move(newBullet));
 	}
 
 }
