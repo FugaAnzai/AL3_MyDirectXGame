@@ -1,5 +1,6 @@
 #include "PlayerBullet.h"
 #include <assert.h>
+#include "MathUtils.h"
 
 void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector3& velocity) { 
 	assert(model);

@@ -2,7 +2,7 @@
 #include "TextureManager.h"
 #include <assert.h>
 #include "ImGuiManager.h"
-#include "Vector3.h"
+#include "MathUtils.h"
 
 Enemy::~Enemy() { delete state_; }
 

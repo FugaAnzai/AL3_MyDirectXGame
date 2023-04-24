@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "cassert"
 #include "ImGuiManager.h"
+#include "MathUtils.h"
 
 Player::~Player() { 
 
@@ -115,7 +116,7 @@ void Player::Attack() {
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
-		velocity = Vector3::TransformNormal(velocity, worldTransform_.matWorld_);
+		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
 		//弾の生成
 		PlayerBullet* newBullet = new PlayerBullet();
