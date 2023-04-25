@@ -4,7 +4,6 @@
 #include "EnemyState.h"
 #include "EnemyBullet.h"
 #include <list>
-#include "TimedCall.h"
 
 class Enemy {
 public:
@@ -14,7 +13,6 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	void Move(const Vector3& move);
 	void Fire();
-	void FireAndReset();
 	void ChangeState(BaseEnemyState* newState);
 
 	//getter,setter
