@@ -9,7 +9,7 @@ Enemy::~Enemy() { delete state_; }
 void Enemy::Initialize(Model* model) { 
 
 	//初期位置
-	const Vector3 initPosition = Vector3(0, 5, 100);
+	const Vector3 initPosition = Vector3(5, 0, 100);
 
 	//モデルがなければ中止
 	assert(model);
@@ -25,12 +25,27 @@ void Enemy::Initialize(Model* model) {
 	state_ = new EnemyStateApproach();
 	//EnemyStateにEnemyのポインタを渡す
 	state_->SetEnemy(this);
+	//EnemyStateの初期化
+	state_->Initialize();
 }
 
 void Enemy::Update() {
 
 	//状態遷移
 	state_->Update();
+
+	// 弾のリストを毎フレーム更新
+	for (auto& bullet : bullets_) {
+		bullet->Update();
+	}
+
+	// 弾の死亡フラグが立っていたらリストから削除
+	bullets_.remove_if([](auto& bullet) {
+		if (bullet->GetIsDead()) {
+			return true;
+		}
+		return false;
+	});
 
 	ImGui::Begin("Enemy");
 	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
@@ -42,15 +57,47 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) { 
+
+	for (auto& bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
+
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }
 
-void Enemy::Move(const Vector3& move) { worldTransform_.translation_ += move; }
+void Enemy::Move(const Vector3& move) { 
+	worldTransform_.translation_ += move; 
+}
+
+void Enemy::Fire() {
+
+	// 弾の速度
+	const float kBulletSpeed = 0.6f;
+	Vector3 velocity(0, 0, kBulletSpeed);
+	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+	// 弾の生成
+	std::unique_ptr<EnemyBullet> newBullet(new EnemyBullet());
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+	// 弾を登録
+	bullets_.push_back(std::move(newBullet));
+
+}
+
+void Enemy::FireAndReset() {
+
+
+}
+
 
 void Enemy::ChangeState(BaseEnemyState* newState) 
 { 
+	//現在のstateをdelete
 	delete state_;
+	//遷移先の状態を代入
 	state_ = newState;
+	//敵クラスの実体を代入
 	state_->SetEnemy(this);
 
 }

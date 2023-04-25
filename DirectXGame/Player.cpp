@@ -24,10 +24,12 @@ void Player::Update() {
 	Rotate();
 	Attack();
 
+	//弾のリストを毎フレーム更新
 	for (auto &bullet : bullets_) {
 		bullet->Update();		
 	}
 
+	//弾の死亡フラグが立っていたらリストから削除
 	bullets_.remove_if([](auto &bullet) {
 		if (bullet->GetIsDead()) {
 			return true;

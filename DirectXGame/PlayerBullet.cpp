@@ -16,12 +16,15 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector
 
 void PlayerBullet::Update() {
 
+	//速度加算
 	worldTransform_.translation_ += velocity_;
 
+	//デスタイマーが0になったら死亡フラグを立てる
 	if (--deathTimer_ <= 0) {
 		isDead_ = true;	
 	}
 
+	//行列更新
 	worldTransform_.UpdateMatrix();
 
 }
