@@ -14,7 +14,8 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	void Move(const Vector3& move);
 	void Fire();
-	void FireAndReset();
+	void FireAndReload();
+	void FireReset();
 	void ChangeState(BaseEnemyState* newState);
 
 	//getter,setter

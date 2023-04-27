@@ -8,8 +8,8 @@ void BaseEnemyState::SetEnemy(Enemy* enemy) {
 
 void EnemyStateApproach::Initialize() {
 
-	//カウントダウン初期化
-	enemy_->FireAndReset();
+	enemy_->SetFireTimer(enemy_->kFireInterval);
+	enemy_->FireAndReload();
 
 }
 
@@ -30,6 +30,9 @@ void EnemyStateApproach::Update() {
 }
 
 void EnemyStateLeave::Initialize() {
+
+	enemy_->FireReset();
+
 }
 
 void EnemyStateLeave::Update() {
