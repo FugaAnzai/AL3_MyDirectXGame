@@ -4,7 +4,10 @@
 #include "ImGuiManager.h"
 #include "MathUtils.h"
 
-Enemy::~Enemy() { delete state_; }
+Enemy::~Enemy() { 
+	delete state_;
+
+}
 
 void Enemy::Initialize(Model* model) { 
 
@@ -42,6 +45,17 @@ void Enemy::Update() {
 	// 弾の死亡フラグが立っていたらリストから削除
 	bullets_.remove_if([](auto& bullet) {
 		if (bullet->GetIsDead()) {
+			return true;
+		}
+		return false;
+	});
+
+	for (auto& timedCall : timedCalls_) {
+		timedCall->Update();
+	}
+
+	timedCalls_.remove_if([](auto& timedCall) {
+		if (timedCall->IsFinished()) {
 			return true;
 		}
 		return false;
@@ -87,9 +101,13 @@ void Enemy::Fire() {
 
 void Enemy::FireAndReset() {
 
+	Fire();
+
+	std::function<void(void)> callback = std::bind(&Enemy::FireAndReset, this);
+	std::unique_ptr<TimedCall> timedCall(new TimedCall(callback, fireTimer_));
+	timedCalls_.push_back(std::move(timedCall));
 
 }
-
 
 void Enemy::ChangeState(BaseEnemyState* newState) 
 { 
