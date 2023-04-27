@@ -13,6 +13,8 @@ void TimedCall::Update() {
 		return;	
 	}
 
+	time_--;
+
 	if (time_ <= 0) {
 		isFinished_ = true;
 		f_();
