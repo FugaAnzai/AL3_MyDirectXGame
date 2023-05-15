@@ -4,12 +4,15 @@
 #include "ImGuiManager.h"
 #include "MathUtils.h"
 
-Enemy::~Enemy() { delete state_; }
+Enemy::~Enemy() { 
+	delete state_;
+
+}
 
 void Enemy::Initialize(Model* model) { 
 
 	//初期位置
-	const Vector3 initPosition = Vector3(5, 0, 100);
+	const Vector3 initPosition = Vector3(20, 0, 100);
 
 	//モデルがなければ中止
 	assert(model);
@@ -33,6 +36,17 @@ void Enemy::Update() {
 
 	//状態遷移
 	state_->Update();
+
+	for (auto& timedCall : timedCalls_) {
+		timedCall->Update();
+	}
+
+	timedCalls_.remove_if([](auto& timedCall) {
+		if (timedCall->IsFinished()) {
+			return true;
+		}
+		return false;
+	});
 
 	// 弾のリストを毎フレーム更新
 	for (auto& bullet : bullets_) {
@@ -85,11 +99,21 @@ void Enemy::Fire() {
 
 }
 
-void Enemy::FireAndReset() {
+void Enemy::FireAndReload() {
 
+	Fire();
+
+	std::function<void(void)> callback = std::bind(&Enemy::FireAndReload, this);
+	std::unique_ptr<TimedCall> timedCall(new TimedCall(callback, fireTimer_));
+	timedCalls_.push_back(std::move(timedCall));
 
 }
 
+void Enemy::FireReset() {
+
+	timedCalls_.clear();
+
+}
 
 void Enemy::ChangeState(BaseEnemyState* newState) 
 { 
@@ -99,5 +123,7 @@ void Enemy::ChangeState(BaseEnemyState* newState)
 	state_ = newState;
 	//敵クラスの実体を代入
 	state_->SetEnemy(this);
+	//初期化関数を呼び出し
+	state_->Initialize();
 
 }

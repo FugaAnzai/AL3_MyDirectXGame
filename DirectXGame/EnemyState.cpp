@@ -8,8 +8,8 @@ void BaseEnemyState::SetEnemy(Enemy* enemy) {
 
 void EnemyStateApproach::Initialize() {
 
-	//カウントダウン初期化
 	enemy_->SetFireTimer(enemy_->kFireInterval);
+	enemy_->FireAndReload();
 
 }
 
@@ -21,17 +21,6 @@ void EnemyStateApproach::Update() {
 	Vector3 move = Vector3(0, 0, kApproachSpeed);
 	//移動処理
 	enemy_->Move(move);
-	//発射タイマーカウントダウン
-	uint32_t timer = enemy_->GetFireTimer();
-	timer--;
-	enemy_->SetFireTimer(timer);
-	if (enemy_->GetFireTimer() == 0) {
-		//弾発射
-		enemy_->Fire();
-		//カウントダウン初期化
-		enemy_->SetFireTimer(enemy_->kFireInterval);
-	}
-
 
 	//z座標が0までいったらstateをLeaveに
 	if (enemy_->GetWorldTransfrom().translation_.z < 0.0f) {
@@ -41,6 +30,9 @@ void EnemyStateApproach::Update() {
 }
 
 void EnemyStateLeave::Initialize() {
+
+	enemy_->FireReset();
+
 }
 
 void EnemyStateLeave::Update() {

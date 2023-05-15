@@ -13,6 +13,8 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 	void Move(const Vector3& move);
 	void Fire();
+	void FireAndReload();
+	void FireReset();
 	void ChangeState(BaseEnemyState* newState);
 
 	//getter,setter
@@ -36,4 +38,6 @@ private:
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 	//弾のタイマー
 	uint32_t fireTimer_ = 0;
+	//時限発動のリスト
+	std::list<std::unique_ptr<TimedCall>> timedCalls_;
 };
