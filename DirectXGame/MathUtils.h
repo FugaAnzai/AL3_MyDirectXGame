@@ -5,6 +5,7 @@
 #include "Matrix4x4.h"
 #include <assert.h>
 #include <cmath>
+#include <algorithm>
 
 /// Vector3関連の関数
 
@@ -89,6 +90,44 @@ inline Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix) {
 
 	return result;
 }
+inline Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) { 
+	Vector3 result;
+	result.x = ((1 - t) * v1.x) + t * v2.x;
+	result.y = ((1 - t) * v1.y) + t * v2.y;
+	result.z = ((1 - t) * v1.z) + t * v2.z;
+	return result;
+}
+inline Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t) {
+	
+	Vector3 result;
+
+	Vector3 start = Normalize(v1);
+	Vector3 end = Normalize(v2);
+
+	float dot = Dot(start, end);
+
+	dot = std::clamp(dot, -1.0f, 1.0f);
+
+	float angle = std::acos(dot);
+	//float angle = std::acos(Dot(start, end));
+
+	if (angle < 0.001f) {
+		return v2;
+	}
+
+	float sinTh = std::sin(angle);
+	float Ps = std::sin(angle * (1 - t));
+	float Pe = std::sin(angle * t);
+
+	result.x = (Ps * start.x + Pe * end.x) / sinTh;
+	result.y = (Ps * start.y + Pe * end.y) / sinTh;
+	result.z = (Ps * start.z + Pe * end.z) / sinTh;
+
+	return Normalize(result);
+
+
+}
+
 
 /// Matrix4x4関連の関数
 

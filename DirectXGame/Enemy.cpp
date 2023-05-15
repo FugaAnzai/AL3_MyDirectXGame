@@ -23,6 +23,7 @@ void Enemy::Initialize(Model* model) {
 	worldTransform_.translation_ = initPosition;
 	//テクスチャロード
 	textureHandle_ = TextureManager::Load("eyes.jpg");
+	worldTransform_.UpdateMatrix();
 	//stateの初期値をnew
 	state_ = new EnemyStateApproach();
 	//EnemyStateにEnemyのポインタを渡す
@@ -86,6 +87,9 @@ void Enemy::Fire() {
 
 	assert(player_);
 
+	Vector3 playerPos = player_->GetWorldPostion();
+	Vector3 enemyPos = GetWorldPostion();
+
 	// 弾の速度
 	const float kBulletSpeed = 0.6f;
 	Vector3 direction = player_->GetWorldPostion() - GetWorldPostion();
@@ -93,7 +97,7 @@ void Enemy::Fire() {
 
 	// 弾の生成
 	std::unique_ptr<EnemyBullet> newBullet(new EnemyBullet());
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity,player_);
 
 	// 弾を登録
 	bullets_.push_back(std::move(newBullet));

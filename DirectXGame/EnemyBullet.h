@@ -5,13 +5,26 @@
 #include "WorldTransform.h"
 #include "TextureManager.h"
 
+class Player;
+
 class EnemyBullet {
 public:
-	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
+	void Initialize(Model* model, const Vector3& position, const Vector3& velocity, Player* player);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
+	//getter
 	bool GetIsDead() const { return isDead_; }
+	Vector3 GetWorldPostion() {
+		Vector3 result;
+		result.x = worldTransform_.matWorld_.m[3][0];
+		result.y = worldTransform_.matWorld_.m[3][1];
+		result.z = worldTransform_.matWorld_.m[3][2];
+		return result;
+	}
+
+	//setter
+	void SetPlayer(Player* player) { player_ = player; }
 
 private:
 	// ワールド変換データ
@@ -28,5 +41,7 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	// 死亡フラグ
 	bool isDead_ = false;
+	//プレイヤー
+	Player* player_ = nullptr;
 
 };
