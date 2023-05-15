@@ -29,6 +29,7 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	player_->Initialize(model_,texureHandle_);
 	enemy_ = new Enemy();
+	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_);
 
 }

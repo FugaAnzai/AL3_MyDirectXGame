@@ -3,11 +3,10 @@
 #include <assert.h>
 #include "ImGuiManager.h"
 #include "MathUtils.h"
+#include "Player.h"
 
 Enemy::~Enemy() { 
-	delete state_;
-
-}
+	delete state_;}
 
 void Enemy::Initialize(Model* model) { 
 
@@ -85,10 +84,12 @@ void Enemy::Move(const Vector3& move) {
 
 void Enemy::Fire() {
 
+	assert(player_);
+
 	// 弾の速度
 	const float kBulletSpeed = 0.6f;
-	Vector3 velocity(0, 0, kBulletSpeed);
-	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+	Vector3 direction = player_->GetWorldPostion() - GetWorldPostion();
+	Vector3 velocity = kBulletSpeed * Normalize(direction);
 
 	// 弾の生成
 	std::unique_ptr<EnemyBullet> newBullet(new EnemyBullet());
@@ -102,6 +103,8 @@ void Enemy::Fire() {
 void Enemy::FireAndReload() {
 
 	Fire();
+
+	//時限発動
 
 	std::function<void(void)> callback = std::bind(&Enemy::FireAndReload, this);
 	std::unique_ptr<TimedCall> timedCall(new TimedCall(callback, fireTimer_));

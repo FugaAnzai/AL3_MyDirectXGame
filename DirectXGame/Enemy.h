@@ -4,6 +4,10 @@
 #include "EnemyState.h"
 #include "EnemyBullet.h"
 #include <list>
+#include "TimedCall.h"
+#include "MathUtils.h"
+
+class Player;
 
 class Enemy {
 public:
@@ -20,7 +24,16 @@ public:
 	//getter,setter
 	WorldTransform GetWorldTransfrom() { return worldTransform_; }
 	uint32_t GetFireTimer() { return fireTimer_; }
+	Vector3 GetWorldPostion() {
+		Vector3 result;
+		result.x = worldTransform_.matWorld_.m[3][0];
+		result.y = worldTransform_.matWorld_.m[3][1];
+		result.z = worldTransform_.matWorld_.m[3][2];
+		return result;
+	}
+
 	void SetFireTimer(uint32_t fireTimer) { fireTimer_ = fireTimer; }
+	void SetPlayer(Player* player) { player_ = player; }
 
 	//定数　
 	static const int kFireInterval = 60;
@@ -40,4 +53,6 @@ private:
 	uint32_t fireTimer_ = 0;
 	//時限発動のリスト
 	std::list<std::unique_ptr<TimedCall>> timedCalls_;
+	//プレイヤーのデータ
+	Player* player_ = nullptr;
 };

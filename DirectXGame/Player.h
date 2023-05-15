@@ -5,6 +5,7 @@
 #include "Vector3.h"
 #include "PlayerBullet.h"
 #include <list>
+#include "MathUtils.h"
 
 class Player {
 public:
@@ -36,6 +37,15 @@ public:
 	/// 攻撃
 	/// </summary>
 	void Attack();
+
+	//getter
+	Vector3 GetWorldPostion() { 
+		Vector3 result;
+		result.x = worldTransform_.matWorld_.m[3][0];
+		result.y = worldTransform_.matWorld_.m[3][1];
+		result.z = worldTransform_.matWorld_.m[3][2];
+		return result;
+	}
 
 private:
 	//ワールド変換データ

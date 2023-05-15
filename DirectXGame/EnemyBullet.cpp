@@ -17,7 +17,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 void EnemyBullet::Update() {
 
 	// 速度加算
-	worldTransform_.translation_ -= velocity_;
+	worldTransform_.translation_ += velocity_;
 
 	// デスタイマーが0になったら死亡フラグを立てる
 	if (--deathTimer_ <= 0) {
