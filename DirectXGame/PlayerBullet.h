@@ -10,8 +10,18 @@ public:
 	void Initialize(Model* model, const Vector3& position,const Vector3& velocity);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
-	
+	void OnCollision();
+
 	bool GetIsDead() const { return isDead_; }
+	Vector3 GetWorldPostion() {
+		Vector3 result;
+		result.x = worldTransform_.matWorld_.m[3][0];
+		result.y = worldTransform_.matWorld_.m[3][1];
+		result.z = worldTransform_.matWorld_.m[3][2];
+		return result;
+	}
+
+	static const int kRadius = 3;
 
 private:
 	//ワールド変換データ

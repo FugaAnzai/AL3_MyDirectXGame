@@ -20,6 +20,7 @@ public:
 	void FireAndReload();
 	void FireReset();
 	void ChangeState(BaseEnemyState* newState);
+	void OnCollision();
 
 	//getter,setter
 	WorldTransform GetWorldTransfrom() { return worldTransform_; }
@@ -31,12 +32,14 @@ public:
 		result.z = worldTransform_.matWorld_.m[3][2];
 		return result;
 	}
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
 
 	void SetFireTimer(uint32_t fireTimer) { fireTimer_ = fireTimer; }
 	void SetPlayer(Player* player) { player_ = player; }
 
 	//定数　
 	static const int kFireInterval = 60;
+	static const int kRadius = 1;
 
 private:
 	//ワールド変換データ

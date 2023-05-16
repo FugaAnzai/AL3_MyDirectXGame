@@ -37,6 +37,7 @@ public:
 	/// 攻撃
 	/// </summary>
 	void Attack();
+	void OnCollision();
 
 	//getter
 	Vector3 GetWorldPostion() { 
@@ -46,6 +47,10 @@ public:
 		result.z = worldTransform_.matWorld_.m[3][2];
 		return result;
 	}
+
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
+	static const int kRadius = 1;
 
 private:
 	//ワールド変換データ
