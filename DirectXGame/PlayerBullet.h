@@ -4,16 +4,18 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "TextureManager.h"
+#include "Collider.h"
 
-class PlayerBullet {
+class PlayerBullet : public Collider {
 public:
 	void Initialize(Model* model, const Vector3& position,const Vector3& velocity);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
-	void OnCollision();
+	void OnCollision() override;
 
 	bool GetIsDead() const { return isDead_; }
-	Vector3 GetWorldPostion() {
+
+	Vector3 GetWorldPosition() override {
 		Vector3 result;
 		result.x = worldTransform_.matWorld_.m[3][0];
 		result.y = worldTransform_.matWorld_.m[3][1];

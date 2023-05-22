@@ -6,10 +6,11 @@
 #include <list>
 #include "TimedCall.h"
 #include "MathUtils.h"
+#include "Collider.h"
 
 class Player;
 
-class Enemy {
+class Enemy : public Collider {
 public:
 	~Enemy();
 	void Initialize(Model* model);
@@ -20,12 +21,12 @@ public:
 	void FireAndReload();
 	void FireReset();
 	void ChangeState(BaseEnemyState* newState);
-	void OnCollision();
+	void OnCollision() override;
 
 	//getter,setter
 	WorldTransform GetWorldTransfrom() { return worldTransform_; }
 	uint32_t GetFireTimer() { return fireTimer_; }
-	Vector3 GetWorldPostion() {
+	Vector3 GetWorldPosition() override {
 		Vector3 result;
 		result.x = worldTransform_.matWorld_.m[3][0];
 		result.y = worldTransform_.matWorld_.m[3][1];

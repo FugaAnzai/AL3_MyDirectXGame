@@ -1,6 +1,5 @@
 #pragma once
 #include "Enemy.h"
-
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "Input.h"
@@ -11,6 +10,7 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include "DebugCamera.h"
+#include "Collider.h"
 
 /// <summary>
 /// ゲームシーン
@@ -57,7 +57,12 @@ private: // メンバ変数
 	bool isDebugCameraActive = false;
 	Enemy* enemy_ = nullptr;
 
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+
 };
+

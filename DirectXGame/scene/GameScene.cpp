@@ -115,57 +115,44 @@ void GameScene::Draw() {
 
 void GameScene::CheckAllCollsions() {
 
-	Vector3 posA, posB;
-
 	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
 
 	//自キャラと敵の弾の当たり判定
-	posA = player_->GetWorldPostion();
 
 	for (auto& bullet : enemyBullets) {
-		//敵弾の座標
-		posB = bullet->GetWorldPostion();
 
-		float lengthAtoB = Length(posB - posA);
-
-		if (lengthAtoB < bullet->kRadius + player_->kRadius) {
-			player_->OnCollision();
-			bullet->OnCollision();
-		}
+		CheckCollisionPair(player_, bullet.get());
 
 	}
 
-	posA = enemy_->GetWorldPostion();
 
 	for (auto& bullet : playerBullets) {
-		// 自弾の座標
-		posB = bullet->GetWorldPostion();
 
-		float lengthAtoB = Length(posB - posA);
+		CheckCollisionPair(enemy_, bullet.get());
 
-		if (lengthAtoB < bullet->kRadius + enemy_->kRadius) {
-			enemy_->OnCollision();
-			bullet->OnCollision();
-		}
 	}
 
 	for (auto& pBullet : playerBullets) {
-		// 自弾の座標
-		posA = pBullet->GetWorldPostion();
-
+		
 		for (auto& eBullet : enemyBullets) {
-			// 敵弾の座標
-			posB = eBullet->GetWorldPostion();
-
-			float lengthAtoB = Length(posB - posA);
-
-			if (lengthAtoB < pBullet->kRadius + eBullet->kRadius) {
-				pBullet->OnCollision();
-				eBullet->OnCollision();
-			}
+			
+			CheckCollisionPair(pBullet.get(), eBullet.get());
 
 		}
+	}
+
+}
+
+void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
+	
+	Vector3 objectA = colliderA->GetWorldPosition();
+	Vector3 objectB = colliderB->GetWorldPosition();
+	float length = Length(Subtract(objectB, objectA));
+
+	if (length < colliderA->GetRadius() + colliderB->GetRadius()) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
 	}
 
 }

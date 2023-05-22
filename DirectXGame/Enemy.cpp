@@ -89,12 +89,12 @@ void Enemy::Fire() {
 
 	// 弾の速度
 	const float kBulletSpeed = 0.6f;
-	Vector3 direction = player_->GetWorldPostion() - GetWorldPostion();
+	Vector3 direction = player_->GetWorldPosition() - GetWorldPosition();
 	Vector3 velocity = kBulletSpeed * Normalize(direction);
 
 	// 弾の生成
 	std::unique_ptr<EnemyBullet> newBullet(new EnemyBullet());
-	newBullet->Initialize(model_, GetWorldPostion(), velocity, player_);
+	newBullet->Initialize(model_, GetWorldPosition(), velocity, player_);
 
 	// 弾を登録
 	bullets_.push_back(std::move(newBullet));
