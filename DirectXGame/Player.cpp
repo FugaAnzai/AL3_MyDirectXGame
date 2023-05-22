@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "cassert"
 #include "ImGuiManager.h"
+#include "CollsionConfig.h"
 
 Player::~Player() { 
 
@@ -14,6 +15,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	worldTransform_.Initialize();
 	input_->GetInstance();
+
+	// 衝突属性と衝突マスクの設定
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(~kCollisionAttributePlayer);
 
 }
 

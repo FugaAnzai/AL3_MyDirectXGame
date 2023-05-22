@@ -118,28 +118,39 @@ void GameScene::CheckAllCollsions() {
 	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
 
-	//自キャラと敵の弾の当たり判定
+	std::list<Collider*> colliders_;
+	colliders_.push_back(player_);
+	colliders_.push_back(enemy_);
 
-	for (auto& bullet : enemyBullets) {
-
-		CheckCollisionPair(player_, bullet.get());
-
-	}
-
-
-	for (auto& bullet : playerBullets) {
-
-		CheckCollisionPair(enemy_, bullet.get());
-
+	for (auto& eBullet : enemyBullets) {
+		colliders_.push_back(eBullet.get());
 	}
 
 	for (auto& pBullet : playerBullets) {
-		
-		for (auto& eBullet : enemyBullets) {
-			
-			CheckCollisionPair(pBullet.get(), eBullet.get());
+		colliders_.push_back(pBullet.get());
+	}
+
+	std::list<Collider*>::iterator itrA = colliders_.begin();
+
+	for (; itrA != colliders_.end(); ++itrA) {
+		Collider* objectA = *itrA;
+
+		std::list<Collider*>::iterator itrB = itrA;
+		itrB++;
+
+		for (; itrB != colliders_.end(); ++itrB) {
+			Collider* objectB = *itrB;
+
+			if (!(objectA->GetCollisionAttribute() & objectB->GetCollisionMask())||
+			    !(objectB->GetCollisionAttribute() & objectA->GetCollisionMask()))
+			{
+				continue;
+			}
+
+			CheckCollisionPair(objectA, objectB);
 
 		}
+
 	}
 
 }

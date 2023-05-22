@@ -1,6 +1,7 @@
 #include "PlayerBullet.h"
 #include <assert.h>
 #include "MathUtils.h"
+#include "CollsionConfig.h"
 
 void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector3& velocity) { 
 	assert(model);
@@ -10,6 +11,9 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector
 	//発生位置のセット
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
+	//衝突属性と衝突マスクの設定
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(~kCollisionAttributePlayer);
 	//初期速度のセット
 	velocity_ = velocity;
 }

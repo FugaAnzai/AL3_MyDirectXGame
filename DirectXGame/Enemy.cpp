@@ -4,6 +4,7 @@
 #include "ImGuiManager.h"
 #include "MathUtils.h"
 #include "Player.h"
+#include "CollsionConfig.h"
 
 Enemy::~Enemy() { 
 	delete state_;}
@@ -30,6 +31,9 @@ void Enemy::Initialize(Model* model) {
 	state_->SetEnemy(this);
 	//EnemyStateの初期化
 	state_->Initialize();
+	//衝突属性と衝突マスクの設定
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(~kCollisionAttributeEnemy);
 }
 
 void Enemy::Update() {
