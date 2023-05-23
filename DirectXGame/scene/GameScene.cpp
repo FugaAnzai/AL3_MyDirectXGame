@@ -31,7 +31,7 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_);
-
+	collisionManager = std::make_unique<CollisionManager>();
 }
 
 void GameScene::Update() {
@@ -115,55 +115,22 @@ void GameScene::Draw() {
 
 void GameScene::CheckAllCollsions() {
 
+	collisionManager->ClearList();
+
 	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
 
-	std::list<Collider*> colliders_;
-	colliders_.push_back(player_);
-	colliders_.push_back(enemy_);
+	collisionManager->AddCollider(player_);
+	collisionManager->AddCollider(enemy_);
 
 	for (auto& eBullet : enemyBullets) {
-		colliders_.push_back(eBullet.get());
+		collisionManager->AddCollider(eBullet.get());
 	}
 
 	for (auto& pBullet : playerBullets) {
-		colliders_.push_back(pBullet.get());
+		collisionManager->AddCollider(pBullet.get());  
 	}
 
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-
-	for (; itrA != colliders_.end(); ++itrA) {
-		Collider* objectA = *itrA;
-
-		std::list<Collider*>::iterator itrB = itrA;
-		itrB++;
-
-		for (; itrB != colliders_.end(); ++itrB) {
-			Collider* objectB = *itrB;
-
-			if (!(objectA->GetCollisionAttribute() & objectB->GetCollisionMask())||
-			    !(objectB->GetCollisionAttribute() & objectA->GetCollisionMask()))
-			{
-				continue;
-			}
-
-			CheckCollisionPair(objectA, objectB);
-
-		}
-
-	}
-
-}
-
-void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
-	
-	Vector3 objectA = colliderA->GetWorldPosition();
-	Vector3 objectB = colliderB->GetWorldPosition();
-	float length = Length(Subtract(objectB, objectA));
-
-	if (length < colliderA->GetRadius() + colliderB->GetRadius()) {
-		colliderA->OnCollision();
-		colliderB->OnCollision();
-	}
+	collisionManager->CheckAllCollsions();
 
 }

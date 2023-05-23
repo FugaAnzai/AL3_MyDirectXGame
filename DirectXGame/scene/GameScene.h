@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "DebugCamera.h"
 #include "Collider.h"
+#include "CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -56,8 +57,7 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCameraActive = false;
 	Enemy* enemy_ = nullptr;
-
-	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+	std::unique_ptr<CollisionManager> collisionManager;
 
 	/// <summary>
 	/// ゲームシーン用
