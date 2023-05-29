@@ -12,6 +12,8 @@ GameScene::~GameScene() {
 	delete player_;
 	delete debugCamera_;
 	delete enemy_;
+	delete modelSkydome_;
+	delete skydome_;
 
 }
 
@@ -23,7 +25,9 @@ void GameScene::Initialize() {
 	texureHandle_ = TextureManager::Load("mario.jpg");
 	model_ = Model::Create();
 	viewprojection_.Initialize();
+	viewprojection_.farZ = 150;
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth,WinApp::kWindowHeight);
+	debugCamera_->SetFarZ(viewprojection_.farZ);
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	player_ = new Player();
@@ -32,6 +36,9 @@ void GameScene::Initialize() {
 	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_);
 	collisionManager = std::make_unique<CollisionManager>();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	skydome_ = new Skydome();
+	skydome_->Initalize(modelSkydome_);
 }
 
 void GameScene::Update() {
@@ -88,6 +95,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	skydome_->Draw(debugCamera_->GetViewProjection());
 
 	player_->Draw(debugCamera_->GetViewProjection());
 

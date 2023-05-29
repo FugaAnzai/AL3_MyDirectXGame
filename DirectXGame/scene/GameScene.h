@@ -12,6 +12,7 @@
 #include "DebugCamera.h"
 #include "Collider.h"
 #include "CollisionManager.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -52,12 +53,14 @@ private: // メンバ変数
 	Audio* audio_ = nullptr;
 	uint32_t texureHandle_ = 0;
 	Model* model_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 	ViewProjection viewprojection_;
 	Player* player_ = nullptr;
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCameraActive = false;
 	Enemy* enemy_ = nullptr;
 	std::unique_ptr<CollisionManager> collisionManager;
+	Skydome* skydome_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
