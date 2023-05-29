@@ -4,6 +4,7 @@
 #include "ImGuiManager.h"
 #include "MathUtils.h"
 #include "Player.h"
+#include "CollsionConfig.h"
 
 Enemy::~Enemy() { 
 	delete state_;}
@@ -30,6 +31,9 @@ void Enemy::Initialize(Model* model) {
 	state_->SetEnemy(this);
 	//EnemyStateの初期化
 	state_->Initialize();
+	//衝突属性と衝突マスクの設定
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(~kCollisionAttributeEnemy);
 }
 
 void Enemy::Update() {
@@ -89,12 +93,12 @@ void Enemy::Fire() {
 
 	// 弾の速度
 	const float kBulletSpeed = 0.6f;
-	Vector3 direction = player_->GetWorldPostion() - GetWorldPostion();
+	Vector3 direction = player_->GetWorldPosition() - GetWorldPosition();
 	Vector3 velocity = kBulletSpeed * Normalize(direction);
 
 	// 弾の生成
 	std::unique_ptr<EnemyBullet> newBullet(new EnemyBullet());
-	newBullet->Initialize(model_, GetWorldPostion(), velocity, player_);
+	newBullet->Initialize(model_, GetWorldPosition(), velocity, player_);
 
 	// 弾を登録
 	bullets_.push_back(std::move(newBullet));

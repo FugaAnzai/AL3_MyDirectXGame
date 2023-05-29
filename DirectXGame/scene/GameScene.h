@@ -1,6 +1,5 @@
 #pragma once
 #include "Enemy.h"
-
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "Input.h"
@@ -11,6 +10,8 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include "DebugCamera.h"
+#include "Collider.h"
+#include "CollisionManager.h"
 
 /// <summary>
 /// ゲームシーン
@@ -56,8 +57,12 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCameraActive = false;
 	Enemy* enemy_ = nullptr;
+	std::unique_ptr<CollisionManager> collisionManager;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+
 };
+

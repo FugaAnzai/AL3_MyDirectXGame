@@ -3,6 +3,7 @@
 #include "MathUtils.h"
 #include "Player.h"
 #include "ImGuiManager.h"
+#include "CollsionConfig.h"
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity, Player* player) {
 	assert(model);
@@ -21,6 +22,9 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	//プレイヤーセット
 	SetPlayer(player);
 	worldTransform_.UpdateMatrix();
+	//衝突属性と衝突マスクの設定
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(~kCollisionAttributeEnemy);
 }
 
 void EnemyBullet::Update() {
