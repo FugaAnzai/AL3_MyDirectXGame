@@ -40,6 +40,9 @@ public:
 	void Attack();
 	void OnCollision() override;
 
+	//setter
+	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
+
 	//getter
 	Vector3 GetWorldPosition() override {
 		Vector3 result;

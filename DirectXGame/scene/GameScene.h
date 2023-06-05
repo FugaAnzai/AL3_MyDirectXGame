@@ -13,6 +13,7 @@
 #include "Collider.h"
 #include "CollisionManager.h"
 #include "Skydome.h"
+#include "RailCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -61,6 +62,7 @@ private: // メンバ変数
 	Enemy* enemy_ = nullptr;
 	std::unique_ptr<CollisionManager> collisionManager;
 	Skydome* skydome_ = nullptr;
+	RailCamera* railcamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

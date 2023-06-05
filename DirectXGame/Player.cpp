@@ -14,6 +14,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
+	worldTransform_.translation_ = Vector3{0, 0, 30};
 	input_->GetInstance();
 
 	// 衝突属性と衝突マスクの設定
@@ -121,7 +122,7 @@ void Player::Attack() {
 
 		//弾の生成
 		std::unique_ptr<PlayerBullet> newBullet(new PlayerBullet());
-		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
 		//弾を登録
 		bullets_.push_back(std::move(newBullet));

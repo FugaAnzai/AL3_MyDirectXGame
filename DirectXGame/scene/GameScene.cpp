@@ -14,6 +14,7 @@ GameScene::~GameScene() {
 	delete enemy_;
 	delete modelSkydome_;
 	delete skydome_;
+	delete railcamera_;
 
 }
 
@@ -25,13 +26,16 @@ void GameScene::Initialize() {
 	texureHandle_ = TextureManager::Load("mario.jpg");
 	model_ = Model::Create();
 	viewprojection_.Initialize();
-	viewprojection_.farZ = 150;
+	viewprojection_.farZ = 100;
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth,WinApp::kWindowHeight);
 	debugCamera_->SetFarZ(viewprojection_.farZ);
+	railcamera_ = new RailCamera();
+	railcamera_->Initialize(Vector3{0, 0, 0}, Vector3{0, 0, 0});
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	player_ = new Player();
 	player_->Initialize(model_,texureHandle_);
+	player_->SetParent(&railcamera_->GetWorldTransform());
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_);
@@ -39,6 +43,7 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	skydome_ = new Skydome();
 	skydome_->Initalize(modelSkydome_);
+	
 }
 
 void GameScene::Update() {
@@ -53,6 +58,8 @@ void GameScene::Update() {
 
 	player_->Update();
 
+	
+
 	if (enemy_ != nullptr) {
 		enemy_->Update();
 	}
@@ -62,8 +69,12 @@ void GameScene::Update() {
 		viewprojection_.matView = debugCamera_->GetViewProjection().matView;
 		viewprojection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 	} else {
-		viewprojection_.UpdateMatrix();
+		railcamera_->Update();
+		viewprojection_.matView = railcamera_->GetViewProjection().matView;
+		viewprojection_.matProjection = railcamera_->GetViewProjection().matProjection;
+		viewprojection_.TransferMatrix();
 	}
+	
 
 	CheckAllCollsions();
 
@@ -96,12 +107,12 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	skydome_->Draw(debugCamera_->GetViewProjection());
+	skydome_->Draw(viewprojection_);
 
-	player_->Draw(debugCamera_->GetViewProjection());
+	player_->Draw(viewprojection_);
 
 	if (enemy_ != nullptr) {
-		enemy_->Draw(debugCamera_->GetViewProjection());
+		enemy_->Draw(viewprojection_);
 	}
 
 	// 3Dオブジェクト描画後処理
