@@ -9,6 +9,7 @@
 #include "Collider.h"
 
 class Player;
+class GameScene;
 
 class Enemy : public Collider {
 public:
@@ -33,10 +34,12 @@ public:
 		result.z = worldTransform_.matWorld_.m[3][2];
 		return result;
 	}
-	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
+	bool GetIsDead() { return isDead_;}
 
 	void SetFireTimer(uint32_t fireTimer) { fireTimer_ = fireTimer; }
 	void SetPlayer(Player* player) { player_ = player; }
+	void SetGameScene(GameScene* gamescene) { gamescene_ = gamescene; }
+	void SetTranslate(const Vector3& translate) { worldTransform_.translation_ = translate; }
 
 	//定数　
 	static const int kFireInterval = 60;
@@ -51,12 +54,14 @@ private:
 	uint32_t textureHandle_;
 	//状態遷移
 	BaseEnemyState* state_; 
-	//弾
-	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 	//弾のタイマー
 	uint32_t fireTimer_ = 0;
 	//時限発動のリスト
 	std::list<std::unique_ptr<TimedCall>> timedCalls_;
 	//プレイヤーのデータ
 	Player* player_ = nullptr;
+	//ゲームシーン
+	GameScene* gamescene_ = nullptr;
+	//死亡フラグ
+	bool isDead_ = false;
 };

@@ -5,14 +5,12 @@
 #include "MathUtils.h"
 #include "Player.h"
 #include "CollsionConfig.h"
+#include "GameScene.h"
 
 Enemy::~Enemy() { 
 	delete state_;}
 
 void Enemy::Initialize(Model* model) { 
-
-	//初期位置
-	const Vector3 initPosition = Vector3(20, 0, 100);
 
 	//モデルがなければ中止
 	assert(model);
@@ -20,8 +18,6 @@ void Enemy::Initialize(Model* model) {
 	model_ = model;
 	//ワールド変換データの初期化
 	worldTransform_.Initialize();
-	//初期位置の代入
-	worldTransform_.translation_ = initPosition;
 	//テクスチャロード
 	textureHandle_ = TextureManager::Load("eyes.jpg");
 	worldTransform_.UpdateMatrix();
@@ -52,19 +48,6 @@ void Enemy::Update() {
 		return false;
 	});
 
-	// 弾のリストを毎フレーム更新
-	for (auto& bullet : bullets_) {
-		bullet->Update();
-	}
-
-	// 弾の死亡フラグが立っていたらリストから削除
-	bullets_.remove_if([](auto& bullet) {
-		if (bullet->GetIsDead()) {
-			return true;
-		}
-		return false;
-	});
-
 	ImGui::Begin("Enemy");
 	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
 	ImGui::InputFloat3("translation", inputTranslation);
@@ -75,10 +58,6 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection) { 
-
-	for (auto& bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
 
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }
@@ -101,7 +80,7 @@ void Enemy::Fire() {
 	newBullet->Initialize(model_, GetWorldPosition(), velocity, player_);
 
 	// 弾を登録
-	bullets_.push_back(std::move(newBullet));
+	gamescene_->AddEnemyBullet(std::move(newBullet));
 
 }
 
@@ -137,5 +116,7 @@ void Enemy::ChangeState(BaseEnemyState* newState)
 }
 
 void Enemy::OnCollision() {
+
+	isDead_ = true;
 
 }

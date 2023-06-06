@@ -31,10 +31,10 @@ void EnemyBullet::Update() {
 	assert(player_);
 
 	//弾からプレイヤーまで
-	//Vector3 toPlayer = player_->GetWorldPostion() - GetWorldPostion();
+	//Vector3 toPlayer = player_->GetWorldPosition() - GetWorldPosition();
 
 	//球面線形補間
-	//velocity_ = Slerp(Normalize(velocity_), Normalize(toPlayer), 0.1f);
+	//velocity_ = Slerp(Normalize(velocity_), Normalize(toPlayer), 0.05f);
 
 	// 速度加算
 	worldTransform_.translation_ += velocity_;
