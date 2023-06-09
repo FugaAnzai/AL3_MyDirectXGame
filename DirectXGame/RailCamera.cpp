@@ -14,7 +14,7 @@ void RailCamera::Initialize(const Vector3& position, const Vector3& radian) {
 
 void RailCamera::Update() {
 
-	Vector3 moveSpeed = Vector3{0,0,0.05f};
+	Vector3 moveSpeed = Vector3{0,0,0.0f};
 
 	worldTransform_.translation_ += moveSpeed;
 

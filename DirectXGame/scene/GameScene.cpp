@@ -24,6 +24,7 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	texureHandle_ = TextureManager::Load("mario.jpg");
+	TextureManager::Load("2DReticle.png");
 	model_ = Model::Create();
 	viewprojection_.Initialize();
 	viewprojection_.farZ = 100;
@@ -56,7 +57,19 @@ void GameScene::Update() {
 
 	UpdateEnemyPopCommands();
 
-	player_->Update();
+	if (isDebugCameraActive) {
+		debugCamera_->Update();
+		viewprojection_.matView = debugCamera_->GetViewProjection().matView;
+		viewprojection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewprojection_.TransferMatrix();
+	} else {
+		railcamera_->Update();
+		viewprojection_.matView = railcamera_->GetViewProjection().matView;
+		viewprojection_.matProjection = railcamera_->GetViewProjection().matProjection;
+		viewprojection_.TransferMatrix();
+	}
+
+	player_->Update(viewprojection_);
 
 	for (auto& enemy : enemies_) {
 		enemy->Update();
@@ -81,18 +94,6 @@ void GameScene::Update() {
 		}
 		return false;
 	});
-
-	if (isDebugCameraActive) {
-		debugCamera_->Update();
-		viewprojection_.matView = debugCamera_->GetViewProjection().matView;
-		viewprojection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-	} else {
-		railcamera_->Update();
-		viewprojection_.matView = railcamera_->GetViewProjection().matView;
-		viewprojection_.matProjection = railcamera_->GetViewProjection().matProjection;
-		viewprojection_.TransferMatrix();
-	}
-	
 
 	CheckAllCollsions();
 
@@ -148,6 +149,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

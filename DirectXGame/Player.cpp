@@ -4,7 +4,7 @@
 #include "CollsionConfig.h"
 
 Player::~Player() { 
-
+	delete sprite2DReticle_;
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle) { 
@@ -14,7 +14,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	textureHandle_ = textureHandle;
 
 	worldTransform_.Initialize();
+	worldTransform3DReticle_.Initialize();
 	worldTransform_.translation_ = Vector3{0, 0, 30};
+	uint32_t textureReticle = TextureManager::Load("2DReticle.png");
+	sprite2DReticle_ = Sprite::Create(textureReticle, Vector2{}, Vector4{1,1,1,1}, Vector2{0.5f, 0.5f});
 	input_->GetInstance();
 
 	// 衝突属性と衝突マスクの設定
@@ -23,7 +26,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 }
 
-void Player::Update() { 
+void Player::Update(const ViewProjection& viewProjection) { 
 
 	Move();
 	Rotate();
@@ -48,8 +51,33 @@ void Player::Update() {
 	ImGui::InputFloat3("translation", inputTranslation);
 	ImGui::End();
 
-	//行列の更新
+	const float kDistancePlayerTo3DReticle = 50.0f;
+	Vector3 offset = {0, 0, 1.0f};
+	offset = TransformNormal(offset,worldTransform_.matWorld_);
+	offset = kDistancePlayerTo3DReticle * Normalize(offset);
+	worldTransform3DReticle_.translation_ = GetWorldPosition() + offset;
+	worldTransform3DReticle_.UpdateMatrix();
+
+	Vector3 reticleWorldPosition = {
+
+	    worldTransform3DReticle_.matWorld_.m[3][0],
+	    worldTransform3DReticle_.matWorld_.m[3][1],
+	    worldTransform3DReticle_.matWorld_.m[3][2]
+
+	};
+
+	Matrix4x4 matViewport =
+	    MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	Matrix4x4 matViewProjectionViewport = Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport));
+
+	reticleWorldPosition = Transform(reticleWorldPosition, matViewProjectionViewport);
+
+	sprite2DReticle_->SetPosition(Vector2{reticleWorldPosition.x, reticleWorldPosition.y});
+
+	// 行列の更新
 	worldTransform_.UpdateMatrix();
+
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
@@ -59,6 +87,12 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	}
 
 	model_->Draw(worldTransform_, viewProjection,textureHandle_);
+	model_->Draw(worldTransform3DReticle_, viewProjection);
+}
+
+void Player::DrawUI() {
+
+	sprite2DReticle_->Draw();
 
 }
 
@@ -118,7 +152,15 @@ void Player::Attack() {
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+		Vector3 reticleWorldPosition = {
+
+			reticleWorldPosition.x = worldTransform3DReticle_.matWorld_.m[3][0],
+		    reticleWorldPosition.y = worldTransform3DReticle_.matWorld_.m[3][1],
+		    reticleWorldPosition.z = worldTransform3DReticle_.matWorld_.m[3][2]
+
+		};
+		velocity = reticleWorldPosition - GetWorldPosition();
+		velocity = kBulletSpeed * Normalize(velocity);
 
 		//弾の生成
 		std::unique_ptr<PlayerBullet> newBullet(new PlayerBullet());

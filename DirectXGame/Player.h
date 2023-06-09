@@ -7,6 +7,7 @@
 #include <list>
 #include "MathUtils.h"
 #include "Collider.h"
+#include "Sprite.h"
 
 class Player : public Collider {
 public:
@@ -21,11 +22,15 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(const ViewProjection& viewProjection);
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(const ViewProjection& viewProjection);
+	/// <summary>
+	/// UI
+	/// </summary>
+	void DrawUI();
 	/// <summary>
 	/// 移動
 	/// </summary>
@@ -59,6 +64,10 @@ public:
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
+	//3Dレティクル
+	WorldTransform worldTransform3DReticle_;
+	//スプライト
+	Sprite* sprite2DReticle_ = nullptr;
 	//モデル
 	Model* model_ = nullptr;
 	//テクスチャハンドル

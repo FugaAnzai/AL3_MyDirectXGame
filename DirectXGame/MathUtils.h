@@ -81,7 +81,7 @@ inline Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
 
 	return result;
 }
-inline Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix) {
+inline Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix) { //回転のみ
 	Vector3 result{};
 
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0];
