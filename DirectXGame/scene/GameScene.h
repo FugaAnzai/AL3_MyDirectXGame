@@ -15,6 +15,7 @@
 #include "Skydome.h"
 #include "RailCamera.h"
 #include <sstream>
+#include "Boss.h"
 
 /// <summary>
 /// ゲームシーン
@@ -60,8 +61,12 @@ private: // メンバ変数
 	uint32_t texureHandle_ = 0;
 	Model* model_ = nullptr;
 	Model* modelSkydome_ = nullptr;
+	Model* modelBossBody_ = nullptr;
+	Model* modelBossArm_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 	ViewProjection viewprojection_;
 	Player* player_ = nullptr;
+	Boss* boss_ = nullptr;
 	DebugCamera* debugCamera_ = nullptr;
 	bool isDebugCameraActive = false;
 	std::list<std::unique_ptr<Enemy>> enemies_;
@@ -72,6 +77,7 @@ private: // メンバ変数
 	std::stringstream enemyPopCommands;
 	bool isWaitEnemyPop = false;
 	int32_t waitEnemyPopTimer = 0;
+	bool isEnd = false;
 
 	/// <summary>
 	/// ゲームシーン用

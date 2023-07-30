@@ -39,7 +39,7 @@ private:
 	// 弾の速度
 	Vector3 velocity_;
 	// 寿命
-	static const int32_t kLifeTime = 60 * 5;
+	static const int32_t kLifeTime = 60 * 10;
 	// フレームタイマー
 	int32_t deathTimer_ = kLifeTime;
 	// 死亡フラグ

@@ -36,12 +36,20 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	LoadEnemyPopData();
 	player_ = new Player();
-	player_->Initialize(model_,texureHandle_);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	player_->Initialize(modelPlayer_,model_,texureHandle_);
 	player_->SetParent(&railcamera_->GetWorldTransform());
 	collisionManager = std::make_unique<CollisionManager>();
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	modelBossBody_ = Model::CreateFromOBJ("bossBody", true);
+	modelBossArm_ = Model::CreateFromOBJ("bossArm", true);
+	boss_ = new Boss();
+	boss_->SetPlayer(player_);
+	boss_->SetGameScene(this);
+	boss_->Initialize(modelBossBody_,modelBossArm_,model_);
 	skydome_ = new Skydome();
 	skydome_->Initalize(modelSkydome_);
+	isEnd = false;
 	
 }
 
@@ -54,8 +62,6 @@ void GameScene::Update() {
 	}
 
 #endif
-
-	UpdateEnemyPopCommands();
 
 	if (isDebugCameraActive) {
 		debugCamera_->Update();
@@ -71,16 +77,24 @@ void GameScene::Update() {
 
 	player_->Update(viewprojection_);
 
-	for (auto& enemy : enemies_) {
-		enemy->Update();
+	boss_->Update();
+
+	if (boss_->GetHitPoint() <= 0 || player_->GetHitPoint() <= 0) {
+		isEnd = true;
 	}
 
-	enemies_.remove_if([](auto& enemy) {
+	if (isEnd && input_->TriggerKey(DIK_R)) {
+		
+		Initialize();
+
+	}
+
+	/*enemies_.remove_if([](auto& enemy) {
 		if (enemy->GetIsDead()) {
 			return true;
 		}
 		return false;
-	});
+	});*/
 
 	// 弾のリストを毎フレーム更新
 	for (auto& bullet : enemyBullets_) {
@@ -128,11 +142,15 @@ void GameScene::Draw() {
 
 	skydome_->Draw(viewprojection_);
 
-	player_->Draw(viewprojection_);
-
-	for (auto& enemy : enemies_) {
-		enemy->Draw(viewprojection_);
+	if (!isEnd) {
+		boss_->Draw(viewprojection_);
 	}
+
+	
+	if (!isEnd) {
+		player_->Draw(viewprojection_);
+	}
+	
 
 	for (auto& bullet : enemyBullets_) {
 		bullet->Draw(viewprojection_);
@@ -141,6 +159,14 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
+
+	/*DrawSphere(Sphere{boss_->GetWorldPosition(), boss_->GetRadius()}, viewprojection_);
+	DrawSphere(
+	    Sphere{boss_->GetLeftArm()->GetWorldPosition(), boss_->GetLeftArm()->GetRadius()},
+	    viewprojection_);
+	DrawSphere(
+	    Sphere{boss_->GetRightArm()->GetWorldPosition(), boss_->GetRightArm()->GetRadius()},
+	    viewprojection_);*/
 
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
@@ -164,9 +190,11 @@ void GameScene::CheckAllCollsions() {
 
 	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
-	const std::list<std::unique_ptr<Enemy>>& enemies = enemies_;
 
 	collisionManager->AddCollider(player_);
+	collisionManager->AddCollider(boss_);
+	collisionManager->AddCollider(boss_->GetRightArm());
+	collisionManager->AddCollider(boss_->GetLeftArm());
 
 	for (auto& eBullet : enemyBullets) {
 		collisionManager->AddCollider(eBullet.get());
@@ -174,10 +202,6 @@ void GameScene::CheckAllCollsions() {
 
 	for (auto& pBullet : playerBullets) {
 		collisionManager->AddCollider(pBullet.get());  
-	}
-
-	for (auto& enemy : enemies) {
-		collisionManager->AddCollider(enemy.get());
 	}
 
 	collisionManager->CheckAllCollsions();

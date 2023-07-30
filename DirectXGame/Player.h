@@ -18,7 +18,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model,uint32_t textureHandle);
+	void Initialize(Model* model,Model* bModel,uint32_t textureHandle);
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -43,6 +43,7 @@ public:
 	/// 攻撃
 	/// </summary>
 	void Attack();
+	void ReticleMove(const ViewProjection& viewProjection);
 	void OnCollision() override;
 
 	//setter
@@ -57,9 +58,11 @@ public:
 		return result;
 	}
 
+	int GetHitPoint() { return hitPoint; }
+
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
-	static const int kRadius = 1;
+	static const int kRadius = 3;
 
 private:
 	//ワールド変換データ
@@ -70,12 +73,16 @@ private:
 	Sprite* sprite2DReticle_ = nullptr;
 	//モデル
 	Model* model_ = nullptr;
+	Model* bmodel_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	//入力
 	Input* input_ = nullptr;
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+	bool isShot = false;
+	uint32_t shotCount = 0;
+	int hitPoint = 5;
 };
 
 

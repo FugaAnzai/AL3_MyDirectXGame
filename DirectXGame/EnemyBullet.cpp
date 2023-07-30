@@ -30,11 +30,15 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 void EnemyBullet::Update() {
 	assert(player_);
 
-	//弾からプレイヤーまで
-	//Vector3 toPlayer = player_->GetWorldPosition() - GetWorldPosition();
+	////弾からプレイヤーまで
+	Vector3 toPlayer = player_->GetWorldPosition() - worldTransform_.translation_;
 
-	//球面線形補間
-	//velocity_ = Slerp(Normalize(velocity_), Normalize(toPlayer), 0.05f);
+	float tmp = Length(toPlayer);
+
+	////球面線形補間
+	if (tmp > 100.0f) {
+		velocity_ = Slerp(Normalize(velocity_), Normalize(toPlayer), 0.02f);
+	}
 
 	// 速度加算
 	worldTransform_.translation_ += velocity_;
@@ -49,10 +53,10 @@ void EnemyBullet::Update() {
 		isDead_ = true;
 	}
 
-	ImGui::Begin("Bullet");
+	/*ImGui::Begin("Bullet");
 	float inputTranslation[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y,worldTransform_.translation_.z};
 	ImGui::InputFloat3("translation", inputTranslation);
-	ImGui::End();
+	ImGui::End();*/
 
 	// 行列更新
 	worldTransform_.UpdateMatrix();

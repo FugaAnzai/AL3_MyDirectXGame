@@ -14,7 +14,7 @@ public:
 
 protected:
 	//Enemyポインタ
-	Enemy* enemy_;
+	Enemy* enemy_ = nullptr;
 };
 
 class EnemyStateApproach : public BaseEnemyState {

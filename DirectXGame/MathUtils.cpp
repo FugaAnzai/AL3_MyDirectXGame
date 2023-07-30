@@ -1,6 +1,8 @@
 #include "MathUtils.h"
 #include <assert.h>
 #include <cmath>
+#include "PrimitiveDrawer.h"
+#include <numbers>
 
 Matrix4x4 Inverse(const Matrix4x4& m) {
 	float A = (m.m[0][0] * m.m[1][1] * m.m[2][2] * m.m[3][3]) +
@@ -123,4 +125,36 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
 	result = Multiply(scaleMatrix, Multiply(rotateXYZMatrix, translateMatrix));
 	return result;
+}
+
+void DrawSphere(const Sphere& sphere,const ViewProjection& viewProjection)
+{
+	const uint32_t kSubdivision = 10;
+	const float kLonEvery = (360 / kSubdivision) * ((float)std::numbers::pi / 180);
+	const float kLatEvery = (360 / kSubdivision) * ((float)std::numbers::pi / 180);
+
+	const float theta = (float)std::numbers::pi / kSubdivision;
+	const float phi = (2 * (float)std::numbers::pi) / kSubdivision;
+
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -(float)std::numbers::pi / 2.0f + kLatEvery * latIndex;
+
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;
+			Vector3 a, b, c;
+			a = sphere.center + (sphere.radius * Vector3{ std::cos(lat) * std::cos(lon),std::sin(lat),std::cos(lat) * std::sin(lon) });
+			b = sphere.center + (sphere.radius * Vector3{ std::cos(lat + theta) * std::cos(lon),std::sin(lat + theta),std::cos(lat + theta) * std::sin(lon) });
+			c = sphere.center + (sphere.radius * Vector3{ std::cos(lat) * std::cos(lon + phi),std::sin(lat),std::cos(lat) * std::sin(lon + phi) });
+
+			PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection);
+			PrimitiveDrawer::GetInstance()->DrawLine3d(a, b, Vector4{0, 1.0f, 0, 1.0f});
+			PrimitiveDrawer::GetInstance()->DrawLine3d(a, c, Vector4{0, 1.0f, 0, 1.0f});
+
+		}
+
+
+
+	}
+
+
 }

@@ -6,7 +6,7 @@ void Skydome::Initalize(Model* model) {
 
 	model_ = model;
 	worldTransform_.Initialize();
-	worldTransform_.scale_ = Vector3{100, 100, 100};
+	worldTransform_.scale_ = Vector3{1000, 1000, 1000};
 	worldTransform_.UpdateMatrix();
 }
 
